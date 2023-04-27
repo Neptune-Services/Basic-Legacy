@@ -1,0 +1,7 @@
+name: Basic
+version: '${version}'
+main: club.crestmc.neptunebasic.NeptuneBasic
+api-version: 1.16
+load: STARTUP
+authors: [ HyperfireRS, Neptune Services ]
+description: Basic tools for a minecraft server.
