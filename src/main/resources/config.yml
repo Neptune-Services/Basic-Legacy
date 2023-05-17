@@ -2,3 +2,14 @@ license-key: ''
 preset: 'crest'
 serverName: 'testing'
 databaseUrl: ''
+
+motd:
+  enabled: true
+  content: |-
+    &7&m-----------------------------------------------
+    &f           &fWelcome to &5&lOuter&f&lWorlds&f!
+    
+    &d&lWebsite: &fhttps://forums.outerworlds.us
+    &d&lDiscord: &fhttps://discord.outerworlds.us
+    &d&lStore: &fhttps://store.outerworlds.us
+    &7&m-----------------------------------------------

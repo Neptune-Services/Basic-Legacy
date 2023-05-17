@@ -3,6 +3,7 @@ package club.crestmc.neptunebasic.commands.playermanagement
 import club.crestmc.neptunebasic.Constants
 import club.crestmc.neptunebasic.NeptuneBasic
 import club.crestmc.neptunebasic.utils.ChatUtil
+import club.crestmc.neptunebasic.utils.StaffMessage
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.CommandIssuer
 import co.aikar.commands.MessageKeys
@@ -17,8 +18,7 @@ class FeedCommand : BaseCommand() {
     @Dependency
     lateinit var plugin: NeptuneBasic
 
-    @CommandAlias("feed")
-    @Description("Feed a player, or yourself.")
+    @Default
     @CommandCompletion("@allOnline")
     fun onHeal(issuer: CommandIssuer, @Name("target") @Optional targetArg: String?) {
         val player = plugin.server.getPlayer(issuer.uniqueId)!!
@@ -40,13 +40,8 @@ class FeedCommand : BaseCommand() {
             target.foodLevel = 20
             player.sendMessage(ChatUtil.translate("${Constants.primaryColor}You've fed ${Constants.secondaryColor}${target.name}${Constants.primaryColor}."))
 
-            for(lp: Player in plugin.server.onlinePlayers) {
-                if(lp.hasPermission("basic.staff")) {
-                    lp.sendMessage(ChatUtil.translate(
-                        "&7&o[${player.name}: &eFed ${target.name}&7&o]"
-                    ))
-                }
-            }
+
+            StaffMessage(plugin).sendStaffMessage("Fed ${target.name}", player.name)
         }
     }
 }

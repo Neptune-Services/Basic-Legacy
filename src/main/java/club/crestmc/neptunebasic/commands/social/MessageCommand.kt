@@ -8,6 +8,8 @@ import co.aikar.commands.CommandIssuer
 import co.aikar.commands.MessageKeys
 import co.aikar.commands.MessageType
 import co.aikar.commands.annotation.*
+import com.mongodb.client.model.Filters.and
+import com.mongodb.client.model.Filters.eq
 import me.clip.placeholderapi.PlaceholderAPI
 
 @CommandAlias("message|pm|msg")
@@ -17,10 +19,18 @@ class MessageCommand : BaseCommand() {
     @Dependency
     lateinit var plugin: NeptuneBasic
 
-    @CommandAlias("message|pm|msg")
-    @Description("Send a player a private message.")
+    @Default
     @CommandCompletion("@allOnline")
     fun messageCommand(issuer: CommandIssuer, @Name("target") targetArg: String, @Name("message") messageArg: String) {
+
+        val doc = plugin.databaseManager.mongoClient.getDatabase("NeptuneCobalt").getCollection("punishments")
+            .find(and(eq("uuid", issuer.uniqueId.toString()), eq("active", true)))
+
+        if(doc.first() != null) {
+            issuer.sendMessage(ChatUtil.translate("&cError: You cannot message people while you are muted."))
+            return
+        }
+
         var message = messageArg.trim()
 
         val player = plugin.server.getPlayer(issuer.uniqueId)!!
@@ -32,12 +42,12 @@ class MessageCommand : BaseCommand() {
             return
         }
 
-        if(SettingsManager(plugin).getSettings(player).allowMessages == false) {
+        if(SettingsManager(plugin).getSettings(player).allowMessages == false && !player.hasPermission("basic.tpmbypass")) {
             player.sendMessage(ChatUtil.translate("&cError: You have your private messages turned off."))
             return
         }
 
-        if(SettingsManager(plugin).getSettings(target).allowMessages == false) {
+        if(SettingsManager(plugin).getSettings(target).allowMessages == false && !player.hasPermission("basic.tpmbypass")) {
             player.sendMessage(ChatUtil.translate("&cError: &e${target.name}&c has their private messages turned off."))
             return
         }

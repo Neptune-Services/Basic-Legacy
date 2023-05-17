@@ -15,6 +15,7 @@ class SettingsManager(val plugin: NeptuneBasic) {
             plugin.databaseManager.usersCollection.insertOne(
                 Document("uuid", player.uniqueId.toString())
                     .append("allowMessages", true)
+                    .append("staffMessages", true)
             )
 
             doc = plugin.databaseManager.usersCollection.find(eq("uuid", player.uniqueId.toString())).first()
@@ -22,6 +23,7 @@ class SettingsManager(val plugin: NeptuneBasic) {
 
         val settings: Settings = Settings()
         settings.allowMessages = doc.getBoolean("allowMessages")
+        settings.staffMessages = doc.getBoolean("staffMessages")
         return settings
     }
 

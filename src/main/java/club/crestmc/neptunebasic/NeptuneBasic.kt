@@ -2,11 +2,14 @@ package club.crestmc.neptunebasic
 
 import club.crestmc.neptunebasic.commands.BasicCommand
 import club.crestmc.neptunebasic.commands.DevCommand
+import club.crestmc.neptunebasic.commands.gamemode.GamemodeCommand
 import club.crestmc.neptunebasic.commands.playermanagement.FeedCommand
 import club.crestmc.neptunebasic.commands.playermanagement.HealCommand
 import club.crestmc.neptunebasic.commands.playermanagement.RenameCommand
+import club.crestmc.neptunebasic.commands.servermanagement.SetMaxPlayersCommand
 import club.crestmc.neptunebasic.commands.settings.SettingsCommand
 import club.crestmc.neptunebasic.commands.settings.TpmCommand
+import club.crestmc.neptunebasic.commands.settings.TsmCommand
 import club.crestmc.neptunebasic.commands.social.MessageCommand
 import club.crestmc.neptunebasic.commands.social.ReplyCommand
 import club.crestmc.neptunebasic.commands.teleport.TeleportCommand
@@ -15,6 +18,7 @@ import club.crestmc.neptunebasic.commands.teleport.TpAllCommand
 import club.crestmc.neptunebasic.config.ConfigManager
 import club.crestmc.neptunebasic.listeners.GUIClickListener
 import club.crestmc.neptunebasic.database.DatabaseManager
+import club.crestmc.neptunebasic.listeners.MOTDListener
 import co.aikar.commands.BukkitCommandCompletionContext
 import co.aikar.commands.MessageType
 import co.aikar.commands.PaperCommandManager
@@ -102,6 +106,17 @@ class NeptuneBasic : JavaPlugin() {
             toReturn
         }
 
+        manager.commandCompletions.registerCompletion(
+            "gamemodes"
+        ) { c: BukkitCommandCompletionContext? ->
+            val toReturn: MutableCollection<String> = HashSet()
+            toReturn.add("CREATIVE")
+            toReturn.add("SURVIVAL")
+            toReturn.add("ADVENTURE")
+            toReturn.add("SPECTATOR")
+            toReturn
+        }
+
         manager.enableUnstableAPI("help")
 
         manager.registerCommand(BasicCommand())
@@ -121,7 +136,13 @@ class NeptuneBasic : JavaPlugin() {
 
             manager.registerCommand(SettingsCommand())
             manager.registerCommand(TpmCommand())
+            manager.registerCommand(TsmCommand())
+
+            manager.registerCommand(SetMaxPlayersCommand())
+
+            manager.registerCommand(GamemodeCommand())
             server.pluginManager.registerEvents(GUIClickListener(), this)
+            server.pluginManager.registerEvents(MOTDListener(this), this)
         }
 
         return;

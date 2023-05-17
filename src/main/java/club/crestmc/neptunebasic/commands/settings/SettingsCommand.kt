@@ -9,8 +9,6 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Dependency
 import co.aikar.commands.annotation.Description
 
-@CommandAlias("settings|options|preferences")
-@Description("Edit your settings on the server.")
 class SettingsCommand : BaseCommand() {
     @Dependency
     lateinit var plugin: NeptuneBasic

@@ -42,6 +42,15 @@ class BasicCommand : BaseCommand() {
         issuer.sendMessage(ChatUtil.translate("&aSuccessfully reloaded Basic."))
     }
 
+    @Subcommand("motd")
+    @CommandPermission("basic.sendmotd")
+    @Description("Send the MOTD (for debug purposes).")
+    fun onMotd(issuer: CommandIssuer) {
+        issuer.sendMessage(ChatUtil.translate(
+            plugin.configManager.config!!.getString("motd.content")
+        ))
+    }
+
     @CatchUnknown
     @HelpCommand
     fun onHelp(issuer: CommandIssuer, help: CommandHelp) {

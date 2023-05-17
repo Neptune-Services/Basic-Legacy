@@ -3,16 +3,12 @@ package club.crestmc.neptunebasic.commands.teleport
 import club.crestmc.neptunebasic.Constants
 import club.crestmc.neptunebasic.NeptuneBasic
 import club.crestmc.neptunebasic.utils.ChatUtil
+import club.crestmc.neptunebasic.utils.StaffMessage
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.CommandIssuer
 import co.aikar.commands.MessageKeys
 import co.aikar.commands.MessageType
-import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.CommandCompletion
-import co.aikar.commands.annotation.CommandPermission
-import co.aikar.commands.annotation.Dependency
-import co.aikar.commands.annotation.Description
-import co.aikar.commands.annotation.Name
+import co.aikar.commands.annotation.*
 import org.bukkit.entity.Player
 
 @CommandAlias("tphere|teleporthere|tph|btphere")
@@ -22,10 +18,8 @@ class TeleportHereCommand : BaseCommand() {
     @Dependency
     lateinit var plugin: NeptuneBasic
 
-    @CommandAlias("tphere|teleporthere|tph|btphere")
-    @Description("Teleport a player to you.")
+    @Default
     @CommandCompletion("@allOnline")
-    @CommandPermission("basic.tphere")
     fun onTpHere(issuer: CommandIssuer, @Name("target") targetArg: String) {
         val player = plugin.server.getPlayer(issuer.uniqueId)
 
@@ -42,14 +36,6 @@ class TeleportHereCommand : BaseCommand() {
             ChatUtil.translate(
             "${Constants.primaryColor}You've teleported ${Constants.secondaryColor}${target.name}${Constants.primaryColor} to you."
         ))
-
-        for (p: Player in plugin.server.onlinePlayers) {
-            if(p.hasPermission("basic.staff")) {
-                p.sendMessage(
-                    ChatUtil.translate(
-                    "&7&o[${player.name}: &eTeleported ${target.name} to ${player.name}&7&o]"
-                ))
-            }
-        }
+        StaffMessage(plugin).sendStaffMessage("Teleported ${target.name} to ${player.name}", player.name)
     }
 }

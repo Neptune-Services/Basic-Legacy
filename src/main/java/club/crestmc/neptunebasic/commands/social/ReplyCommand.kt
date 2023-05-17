@@ -9,6 +9,7 @@ import co.aikar.commands.CommandIssuer
 import co.aikar.commands.MessageKeys
 import co.aikar.commands.MessageType
 import co.aikar.commands.annotation.*
+import com.mongodb.client.model.Filters
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.OfflinePlayer
 
@@ -19,9 +20,17 @@ class ReplyCommand : BaseCommand() {
     @Dependency
     lateinit var plugin: NeptuneBasic
 
-    @CommandAlias("reply|r")
-    @Description("Reply to your most recent message.")
+    @Default
     fun onReply(issuer: CommandIssuer, @Optional @Name("message") messageArg: String?) {
+
+        val doc = plugin.databaseManager.mongoClient.getDatabase("NeptuneCobalt").getCollection("punishments")
+            .find(Filters.and(Filters.eq("uuid", issuer.uniqueId.toString()), Filters.eq("active", true)))
+
+        if(doc.first() != null) {
+            issuer.sendMessage(ChatUtil.translate("&cError: You cannot message people while you are muted."))
+            return
+        }
+
         val player = plugin.server.getPlayer(issuer.uniqueId)
         val conversation = plugin.conversations[player as OfflinePlayer]
         if(conversation == null) {
@@ -29,7 +38,7 @@ class ReplyCommand : BaseCommand() {
             return
         }
         if (messageArg == null) {
-            player.sendMessage(ChatUtil.translate("${Constants.primaryColor}You are currently in a conversation with ${Constants.secondaryColor}${conversation.name}${Constants.primaryColor}."))
+            player.sendMessage(ChatUtil.translate("${Constants.primaryColor}You're currently messaging ${Constants.secondaryColor}${conversation.name}${Constants.primaryColor}."))
             return // Exit the function early if messageArg is null
         }
         if(messageArg == null) {
@@ -43,12 +52,12 @@ class ReplyCommand : BaseCommand() {
                 return
             }
 
-            if(SettingsManager(plugin).getSettings(player).allowMessages == false) {
+            if(SettingsManager(plugin).getSettings(player).allowMessages == false && !player.hasPermission("basic.tpmbypass")) {
                 player.sendMessage(ChatUtil.translate("&cError: You have your private messages turned off."))
                 return
             }
 
-            if(SettingsManager(plugin).getSettings(target).allowMessages == false) {
+            if(SettingsManager(plugin).getSettings(target).allowMessages == false && !player.hasPermission("basic.tpmbypass")) {
                 player.sendMessage(ChatUtil.translate("&cError: &e${target.name}&c has their private messages turned off."))
                 return
             }

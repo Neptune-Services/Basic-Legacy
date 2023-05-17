@@ -3,12 +3,12 @@ package club.crestmc.neptunebasic.commands.playermanagement
 import club.crestmc.neptunebasic.Constants
 import club.crestmc.neptunebasic.NeptuneBasic
 import club.crestmc.neptunebasic.utils.ChatUtil
+import club.crestmc.neptunebasic.utils.StaffMessage
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.CommandIssuer
 import co.aikar.commands.annotation.*
 import org.bukkit.Material
 import org.bukkit.entity.Player
-
 
 @CommandAlias("rename")
 @Description("Rename the item in your hand.")
@@ -17,8 +17,7 @@ class RenameCommand : BaseCommand() {
     @Dependency
     lateinit var plugin: NeptuneBasic
 
-    @CommandAlias("rename")
-    @Description("Rename the item in your hand.")
+    @Default
     fun onRenameRun(issuer: CommandIssuer, @Name("name") nameArg: String) {
         val name = nameArg.trim()
 
@@ -44,14 +43,7 @@ class RenameCommand : BaseCommand() {
         player.sendMessage(ChatUtil.translate(
             "${Constants.primaryColor}You've renamed your currently held item to ${Constants.secondaryColor}${name}${Constants.primaryColor}."
         ))
-
-        for(lp: Player in plugin.server.onlinePlayers) {
-            if(lp.hasPermission("basic.staff")) {
-                lp.sendMessage(ChatUtil.translate(
-                    "&7&o[${player.name}: &eRenamed their item to ${name}&7&o]"
-                ))
-            }
-        }
+        StaffMessage(plugin).sendStaffMessage("Renamed their item to $name", player.name)
 
     }
 }

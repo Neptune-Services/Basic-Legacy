@@ -3,17 +3,12 @@ package club.crestmc.neptunebasic.commands.teleport
 import club.crestmc.neptunebasic.Constants
 import club.crestmc.neptunebasic.NeptuneBasic
 import club.crestmc.neptunebasic.utils.ChatUtil
+import club.crestmc.neptunebasic.utils.StaffMessage
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.CommandIssuer
 import co.aikar.commands.MessageKeys
 import co.aikar.commands.MessageType
-import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.CommandCompletion
-import co.aikar.commands.annotation.CommandPermission
-import co.aikar.commands.annotation.Dependency
-import co.aikar.commands.annotation.Description
-import co.aikar.commands.annotation.Name
-import co.aikar.commands.annotation.Optional
+import co.aikar.commands.annotation.*
 import org.bukkit.entity.Player
 
 @CommandAlias("teleport|tp|btp")
@@ -24,9 +19,7 @@ class TeleportCommand : BaseCommand() {
     @Dependency
     lateinit var plugin: NeptuneBasic
 
-    @CommandAlias("teleport|tp|btp")
-    @Description("Teleport to a player, or teleport a player to you.")
-    @CommandPermission("basic.teleport")
+    @Default
     @CommandCompletion("@allOnline")
     fun onTeleportRun(issuer: CommandIssuer, @Name("target") targetArg: String, @Name("target2") @Optional target2Arg: String?) {
 
@@ -52,13 +45,7 @@ class TeleportCommand : BaseCommand() {
                 "${Constants.primaryColor}You've teleported to ${Constants.secondaryColor}${target1.name}${Constants.primaryColor}."
             ))
 
-            for (p: Player in plugin.server.onlinePlayers) {
-                if(p.hasPermission("basic.staff")) {
-                    p.sendMessage(ChatUtil.translate(
-                        "&7&o[${player.name}: &eTeleported to ${target1.name}&7&o]"
-                    ))
-                }
-            }
+            StaffMessage(plugin).sendStaffMessage("Teleported to ${target1.name}", player.name)
 
         } else {
             val target1 = plugin.server.getPlayer(targetArg)
@@ -82,13 +69,7 @@ class TeleportCommand : BaseCommand() {
                 "${Constants.primaryColor}You have teleported ${Constants.secondaryColor}${target1.name}${Constants.primaryColor} to ${Constants.secondaryColor}${target2.name}${Constants.primaryColor}."
             ))
 
-            for (p: Player in plugin.server.onlinePlayers) {
-                if(p.hasPermission("basic.staff")) {
-                    p.sendMessage(ChatUtil.translate(
-                        "&7&o[${player.name}: &eTeleported ${target1.name} to ${target2.name}&7&o]"
-                    ))
-                }
-            }
+            StaffMessage(plugin).sendStaffMessage("Teleported ${target1.name} to ${target2.name}", player.name)
         }
     }
 }
